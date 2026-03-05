@@ -1,501 +1,800 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
-
+<html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Ervina Novlianti || Portfolio</title>
-    <link href="dist/output.css" rel="stylesheet" />
-    <script>
-        // On page load or when changing themes, best to add inline in `head` to avoid FOUC
-        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
-    </script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Ervina Novlianti — Backend Developer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&family=Outfit:wght@200;300;400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --cream: #F5F0E8;
+    --ivory: #FAF7F2;
+    --charcoal: #1C1C1E;
+    --warm-gray: #6B6560;
+    --stone: #9E9590;
+    --gold: #B8975A;
+    --gold-light: #D4B483;
+    --muted: #E8E2D9;
+    --border: rgba(184,151,90,0.2);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--ivory);
+    color: var(--charcoal);
+    font-family: 'Outfit', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+  }
+
+  /* ── CURSOR ── */
+  .cursor {
+    width: 8px; height: 8px;
+    background: var(--gold);
+    border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none; z-index: 9999;
+    transition: transform 0.15s ease, opacity 0.3s;
+    transform: translate(-50%,-50%);
+  }
+  .cursor-ring {
+    width: 32px; height: 32px;
+    border: 1px solid var(--gold);
+    border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none; z-index: 9998;
+    opacity: 0.5;
+    transition: transform 0.4s ease, opacity 0.3s;
+    transform: translate(-50%,-50%);
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    padding: 28px 60px;
+    display: flex; justify-content: space-between; align-items: center;
+    background: rgba(250,247,242,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.4s;
+  }
+  nav.scrolled { border-bottom-color: var(--border); }
+
+  .nav-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    color: var(--charcoal);
+    text-decoration: none;
+  }
+  .nav-logo span { color: var(--gold); }
+
+  .nav-links { display: flex; gap: 40px; list-style: none; }
+  .nav-links a {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 300;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--warm-gray);
+    text-decoration: none;
+    transition: color 0.3s;
+    position: relative;
+  }
+  .nav-links a::after {
+    content: '';
+    position: absolute; bottom: -3px; left: 0;
+    width: 0; height: 1px;
+    background: var(--gold);
+    transition: width 0.3s ease;
+  }
+  .nav-links a:hover { color: var(--charcoal); }
+  .nav-links a:hover::after { width: 100%; }
+
+  /* ── HERO ── */
+  #home {
+    min-height: 100vh;
+    display: flex; align-items: center;
+    padding: 120px 60px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute; top: 0; right: 0;
+    width: 45%; height: 100%;
+    background: var(--cream);
+    clip-path: polygon(12% 0, 100% 0, 100% 100%, 0% 100%);
+    z-index: 0;
+  }
+  .hero-bg::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 40px,
+      rgba(184,151,90,0.04) 40px,
+      rgba(184,151,90,0.04) 41px
+    );
+  }
+
+  .hero-content { position: relative; z-index: 1; max-width: 700px; }
+
+  .hero-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 32px;
+    opacity: 0; animation: fadeUp 0.8s 0.2s forwards;
+  }
+  .hero-tag::before { content: ''; width: 40px; height: 1px; background: var(--gold); }
+
+  .hero-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(3.5rem, 7vw, 6rem);
+    font-weight: 300;
+    line-height: 1;
+    letter-spacing: -0.01em;
+    color: var(--charcoal);
+    margin-bottom: 6px;
+    opacity: 0; animation: fadeUp 0.8s 0.35s forwards;
+  }
+  .hero-name em {
+    font-style: italic;
+    font-weight: 300;
+    color: var(--gold);
+  }
+
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(1.4rem, 2.5vw, 2rem);
+    font-weight: 300;
+    font-style: italic;
+    color: var(--warm-gray);
+    margin-bottom: 36px;
+    opacity: 0; animation: fadeUp 0.8s 0.5s forwards;
+  }
+
+  .hero-desc {
+    font-size: 0.95rem;
+    line-height: 1.9;
+    color: var(--warm-gray);
+    max-width: 480px;
+    margin-bottom: 52px;
+    opacity: 0; animation: fadeUp 0.8s 0.65s forwards;
+  }
+
+  .hero-actions {
+    display: flex; gap: 20px; align-items: center;
+    opacity: 0; animation: fadeUp 0.8s 0.8s forwards;
+  }
+
+  .btn-primary {
+    padding: 14px 36px;
+    background: var(--charcoal);
+    color: var(--ivory);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: all 0.3s;
+    border: 1px solid var(--charcoal);
+  }
+  .btn-primary:hover {
+    background: var(--gold);
+    border-color: var(--gold);
+  }
+
+  .btn-ghost {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--charcoal);
+    text-decoration: none;
+    display: flex; align-items: center; gap: 10px;
+    transition: color 0.3s;
+  }
+  .btn-ghost::after { content: '→'; transition: transform 0.3s; }
+  .btn-ghost:hover { color: var(--gold); }
+  .btn-ghost:hover::after { transform: translateX(5px); }
+
+  .hero-number {
+    position: absolute; right: 60px; bottom: 60px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 10rem;
+    font-weight: 300;
+    color: rgba(184,151,90,0.07);
+    line-height: 1;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── SECTIONS ── */
+  section { padding: 120px 60px; }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    display: flex; align-items: center; gap: 16px;
+    margin-bottom: 20px;
+  }
+  .section-label::before { content: ''; width: 32px; height: 1px; background: var(--gold); }
+
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.2rem, 4vw, 3.5rem);
+    font-weight: 300;
+    line-height: 1.1;
+    color: var(--charcoal);
+    margin-bottom: 60px;
+  }
+
+  /* ── ABOUT ── */
+  #about { background: var(--cream); }
+
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: start;
+  }
+
+  .about-text p {
+    font-size: 0.95rem;
+    line-height: 1.9;
+    color: var(--warm-gray);
+    margin-bottom: 24px;
+  }
+
+  .skills-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    margin-top: 40px;
+  }
+
+  .skill-item {
+    padding: 20px 24px;
+    background: var(--ivory);
+    border-left: 2px solid transparent;
+    transition: border-color 0.3s, background 0.3s;
+  }
+  .skill-item:hover { border-color: var(--gold); background: white; }
+
+  .skill-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--stone);
+    margin-bottom: 6px;
+  }
+  .skill-value {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    font-weight: 400;
+    color: var(--charcoal);
+  }
+
+  .social-links { display: flex; gap: 16px; margin-top: 40px; }
+  .social-link {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--warm-gray);
+    text-decoration: none;
+    padding: 10px 18px;
+    border: 1px solid var(--border);
+    transition: all 0.3s;
+  }
+  .social-link:hover { border-color: var(--gold); color: var(--gold); }
+
+  /* ── PROJECTS ── */
+  #portfolio { background: var(--ivory); }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2px;
+  }
+
+  .project-card {
+    position: relative;
+    overflow: hidden;
+    background: var(--cream);
+    padding: 44px 40px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.4s;
+    text-decoration: none;
+    display: block;
+    color: inherit;
+  }
+  .project-card:hover { background: white; }
+
+  .project-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0;
+    width: 3px; height: 0;
+    background: var(--gold);
+    transition: height 0.4s ease;
+  }
+  .project-card:hover::before { height: 100%; }
+
+  .project-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--stone);
+    letter-spacing: 0.1em;
+    margin-bottom: 20px;
+  }
+
+  .project-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: var(--charcoal);
+    margin-bottom: 14px;
+    line-height: 1.2;
+    transition: color 0.3s;
+  }
+  .project-card:hover .project-title { color: var(--gold); }
+
+  .project-desc {
+    font-size: 0.85rem;
+    line-height: 1.8;
+    color: var(--warm-gray);
+    margin-bottom: 24px;
+  }
+
+  .project-tech {
+    display: flex; flex-wrap: wrap; gap: 8px;
+  }
+  .tech-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    padding: 5px 12px;
+    background: var(--ivory);
+    color: var(--stone);
+    border: 1px solid var(--border);
+    transition: all 0.3s;
+  }
+  .project-card:hover .tech-tag { border-color: rgba(184,151,90,0.4); }
+
+  .project-arrow {
+    position: absolute; top: 44px; right: 40px;
+    font-size: 1.2rem;
+    color: var(--stone);
+    transition: all 0.3s;
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+  .project-card:hover .project-arrow { opacity: 1; transform: translateX(0); color: var(--gold); }
+
+  /* ── EXPERIENCE ── */
+  #experience { background: var(--charcoal); }
+  #experience .section-title { color: var(--cream); }
+
+  .exp-grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 80px;
+  }
+
+  .exp-intro p {
+    font-size: 0.9rem;
+    line-height: 1.9;
+    color: var(--stone);
+  }
+
+  .exp-list { display: flex; flex-direction: column; gap: 0; }
+
+  .exp-item {
+    padding: 32px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 40px;
+    align-items: start;
+    transition: background 0.3s;
+  }
+  .exp-item:first-child { padding-top: 0; }
+
+  .exp-year {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--gold);
+    letter-spacing: 0.12em;
+    padding-top: 4px;
+  }
+
+  .exp-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem;
+    font-weight: 400;
+    color: var(--cream);
+    margin-bottom: 8px;
+  }
+  .exp-role {
+    font-size: 0.82rem;
+    color: var(--stone);
+    font-style: italic;
+    margin-bottom: 12px;
+    font-family: 'Cormorant Garamond', serif;
+  }
+  .exp-detail {
+    font-size: 0.82rem;
+    color: var(--stone);
+    line-height: 1.8;
+  }
+
+  /* ── CONTACT ── */
+  #contact { background: var(--ivory); }
+
+  .contact-inner {
+    max-width: 640px;
+  }
+
+  .contact-email {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(1.6rem, 3vw, 2.5rem);
+    font-weight: 300;
+    color: var(--charcoal);
+    text-decoration: none;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 8px;
+    display: inline-block;
+    transition: border-color 0.3s, color 0.3s;
+  }
+  .contact-email:hover { border-color: var(--gold); color: var(--gold); }
+
+  .contact-loc {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--stone);
+    margin-top: 20px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .contact-loc::before { content: '◎'; color: var(--gold); }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--charcoal);
+    padding: 40px 60px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .footer-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.9rem;
+    color: var(--stone);
+    letter-spacing: 0.1em;
+  }
+  .footer-copy {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    color: rgba(255,255,255,0.2);
+    letter-spacing: 0.1em;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ── DIVIDER ── */
+  .gold-line {
+    width: 60px; height: 1px;
+    background: linear-gradient(90deg, var(--gold), transparent);
+    margin-bottom: 48px;
+  }
+
+  /* ── MOBILE ── */
+  @media (max-width: 900px) {
+    nav { padding: 24px 28px; }
+    .nav-links { gap: 24px; }
+    section { padding: 80px 28px; }
+    #home { padding: 110px 28px 60px; }
+    .about-grid, .exp-grid { grid-template-columns: 1fr; gap: 48px; }
+    .projects-grid { grid-template-columns: 1fr; }
+    footer { flex-direction: column; gap: 12px; text-align: center; }
+    .hero-bg { display: none; }
+  }
+  @media (max-width: 600px) {
+    .nav-links { display: none; }
+    .exp-item { grid-template-columns: 1fr; gap: 8px; }
+    .skills-grid { grid-template-columns: 1fr; }
+  }
+</style>
 </head>
-
 <body>
-    <!-- Header Start -->
-    <header class="absolute top-0 left-0 z-10 flex w-full items-center bg-transparent">
-        <div class="container">
-            <div class="relative flex items-center justify-between">
-                <div class="px-4">
-                    <a href="#home" class="block py-6 text-lg font-bold text-primary">ervinanovlianti</a>
-                </div>
-                <div class="flex items-center px-4">
-                    <button id="hamburger" name="hamburger" type="button" class="absolute right-4 block lg:hidden">
-                        <span class="hamburger-line origin-top-left transition duration-300 ease-in-out"></span>
-                        <span class="hamburger-line transition duration-300 ease-in-out"></span>
-                        <span class="hamburger-line origin-bottom-left transition duration-300 ease-in-out"></span>
-                    </button>
-                    <nav id="nav-menu"
-                        class="absolute right-4 top-full hidden w-full max-w-[250px] rounded-lg bg-white py-5 shadow-lg dark:bg-dark dark:shadow-slate-700 lg:static lg:block lg:max-w-full lg:rounded-none lg:bg-transparent lg:shadow-none lg:dark:bg-transparent">
-                        <ul class="block lg:flex">
-                            <li class="group">
-                                <a href="#home"
-                                    class="mx-8 flex py-2 text-base text-dark group-hover:text-primary dark:text-white">Home</a>
-                            </li>
-                            <li class="group">
-                                <a href="#about"
-                                    class="mx-8 flex py-2 text-base text-dark group-hover:text-primary dark:text-white">About</a>
-                            </li>
-                            <li class="group">
-                                <a href="#portfolio"
-                                    class="mx-8 flex py-2 text-base text-dark group-hover:text-primary dark:text-white">Portfolio</a>
-                            </li>
-                            <li class="group">
-                                <a href="#blog"
-                                    class="mx-8 flex py-2 text-base text-dark group-hover:text-primary dark:text-white">Experience</a>
-                            </li>
-                            <li class="group">
-                                <a href="#contact"
-                                    class="mx-8 flex py-2 text-base text-dark group-hover:text-primary dark:text-white">Contact</a>
-                            </li>
-                            <li class="mt-3 flex items-center pl-8 lg:mt-0">
-                                <div class="flex">
-                                    <span class="mr-2 text-sm text-slate-500">light</span>
-                                    <input type="checkbox" name="" id="dark-toggle" class="hidden" />
-                                    <label for="dark-toggle">
-                                        <div
-                                            class="flex h-5 w-9 cursor-pointer items-center rounded-full bg-slate-500 p-1 transition duration-300 ease-in-out">
-                                            <div class="togle-circle h-4 w-4 rounded-full bg-white"></div>
-                                        </div>
-                                    </label>
-                                    <span class="mr-2 pl-2 text-sm text-slate-500">dark</span>
-                                </div>
-                            </li>
-                        </ul>
-                    </nav>
-                </div>
-            </div>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="#home" class="nav-logo">Ervina <span>N.</span></a>
+  <ul class="nav-links">
+    <li><a href="#home">Home</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#portfolio">Work</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="home">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <div class="hero-tag">Backend Developer</div>
+    <h1 class="hero-name">Ervina<br><em>Novlianti</em></h1>
+    <p class="hero-title">PHP · Node.js · Full-Stack</p>
+    <p class="hero-desc">Experienced in building website-based systems — from planning and designing to coding, testing, and maintenance. I craft reliable backends and bring ideas to life.</p>
+    <div class="hero-actions">
+      <a href="https://www.linkedin.com/in/ervina-novlianti/" target="_blank" class="btn-primary">Get in Touch</a>
+      <a href="#portfolio" class="btn-ghost">View Work</a>
+    </div>
+  </div>
+  <div class="hero-number">EN</div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="section-label">About</div>
+  <h2 class="section-title">Web Developer<br>based in Makassar</h2>
+  <div class="about-grid">
+    <div class="about-text reveal">
+      <p>I'm a backend developer with a passion for building clean, well-structured systems. My expertise lies in PHP and Node.js, with experience delivering projects end-to-end — from architecture to deployment.</p>
+      <p>I enjoy solving real problems through code, and I'm always looking for new challenges that push me to grow as a developer.</p>
+      <div class="social-links">
+        <a href="https://www.instagram.com/ervnanvlnti/" target="_blank" class="social-link">Instagram</a>
+        <a href="https://www.linkedin.com/in/ervina-novlianti/" target="_blank" class="social-link">LinkedIn</a>
+        <a href="https://github.com/ervinanovlianti" target="_blank" class="social-link">GitHub</a>
+      </div>
+    </div>
+    <div class="skills-grid reveal">
+      <div class="skill-item">
+        <div class="skill-label">Primary</div>
+        <div class="skill-value">PHP / Laravel</div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-label">Backend</div>
+        <div class="skill-value">Node.js / Hapi</div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-label">Frontend</div>
+        <div class="skill-value">React.js</div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-label">Database</div>
+        <div class="skill-value">MySQL / MongoDB</div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-label">Framework</div>
+        <div class="skill-value">CodeIgniter 3</div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-label">Other</div>
+        <div class="skill-value">Express.js</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PORTFOLIO -->
+<section id="portfolio">
+  <div class="section-label">Portfolio</div>
+  <h2 class="section-title">Selected<br>Projects</h2>
+  <div class="projects-grid">
+
+    <a href="https://github.com/ervinanovlianti/sistem-rekapitulasi-keluhan" target="_blank" class="project-card reveal">
+      <span class="project-arrow">↗</span>
+      <div class="project-num">01</div>
+      <div class="project-title">Recapitulation & Monitoring System</div>
+      <p class="project-desc">Container service complaint management system for PT Pelindo Terminal Petikemas. Applies Naive Bayes classification to categorise complaints automatically.</p>
+      <div class="project-tech">
+        <span class="tech-tag">Laravel</span>
+        <span class="tech-tag">PHP</span>
+        <span class="tech-tag">Naive Bayes</span>
+      </div>
+    </a>
+
+    <a href="https://github.com/ervinanovlianti/bookself-restful-api" target="_blank" class="project-card reveal">
+      <span class="project-arrow">↗</span>
+      <div class="project-num">02</div>
+      <div class="project-title">BookShelf Restful API</div>
+      <p class="project-desc">Full CRUD RESTful API for book management. Built as a Dicoding Academy submission project with comprehensive endpoint coverage.</p>
+      <div class="project-tech">
+        <span class="tech-tag">Node.js</span>
+        <span class="tech-tag">Hapi.js</span>
+        <span class="tech-tag">REST API</span>
+      </div>
+    </a>
+
+    <a href="https://github.com/ervinanovlianti/project-react.js" target="_blank" class="project-card reveal">
+      <span class="project-arrow">↗</span>
+      <div class="project-num">03</div>
+      <div class="project-title">Book Store Management</div>
+      <p class="project-desc">Full-stack bookstore application from Bootcamp Camp404. React frontend, Express backend, MongoDB for data persistence.</p>
+      <div class="project-tech">
+        <span class="tech-tag">React.js</span>
+        <span class="tech-tag">Express.js</span>
+        <span class="tech-tag">MongoDB</span>
+      </div>
+    </a>
+
+    <a href="https://github.com/ervinanovlianti/task-5-fullstack" target="_blank" class="project-card reveal">
+      <span class="project-arrow">↗</span>
+      <div class="project-num">04</div>
+      <div class="project-title">Web Blog — Fullstack</div>
+      <p class="project-desc">Blog platform with JWT authentication via Laravel Auth. Final project for Virtual Internship at Investree through Rakamin Academy.</p>
+      <div class="project-tech">
+        <span class="tech-tag">Laravel</span>
+        <span class="tech-tag">JWT</span>
+        <span class="tech-tag">MySQL</span>
+      </div>
+    </a>
+
+    <a href="https://ervinanovlianti.com/sepatu-kita/" target="_blank" class="project-card reveal">
+      <span class="project-arrow">↗</span>
+      <div class="project-num">05</div>
+      <div class="project-title">Online Store / E-commerce</div>
+      <p class="project-desc">Full-featured e-commerce for shoe retail — cart, payment, reports and three-tier user access: Admin, Cashier, and Customer.</p>
+      <div class="project-tech">
+        <span class="tech-tag">PHP</span>
+        <span class="tech-tag">CodeIgniter 3</span>
+        <span class="tech-tag">MySQL</span>
+      </div>
+    </a>
+
+    <a href="https://github.com/ervinanovlianti/autopdf-logbook-km4" target="_blank" class="project-card reveal">
+      <span class="project-arrow">↗</span>
+      <div class="project-num">06</div>
+      <div class="project-title">Auto PDF Daily Logbook</div>
+      <p class="project-desc">Automated daily reporting system for Kampus Mengajar Batch 4. Eliminates repetitive report formatting — outputs a ready-to-submit PDF.</p>
+      <div class="project-tech">
+        <span class="tech-tag">PHP</span>
+        <span class="tech-tag">CodeIgniter 3</span>
+        <span class="tech-tag">PDF Export</span>
+      </div>
+    </a>
+
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="section-label" style="color:var(--gold-light)">Experience</div>
+  <h2 class="section-title">Activities &<br>Organisations</h2>
+  <div class="exp-grid">
+    <div class="exp-intro reveal">
+      <p style="color:var(--stone)">A journey shaped by learning programmes, real-world projects, and community initiatives that continue to define how I approach development.</p>
+    </div>
+    <div class="exp-list">
+      <div class="exp-item reveal">
+        <div class="exp-year">2022</div>
+        <div>
+          <div class="exp-name">IGNITION SANDBOX — Sherpa</div>
+          <div class="exp-role">Startup Incubation Programme</div>
+          <p class="exp-detail">Platform for building digital startups, guided by experienced mentors. Developed ideas in a structured, mentor-led environment.</p>
         </div>
-    </header>
-    <!-- Header End -->
-
-    <!-- Hero Section Start -->
-    <section id="home" class="bg-slate-100 pt-52 pb-32 dark:bg-dark">
-        <div class="container">
-            <div class="flex flex-wrap">
-                <!-- Element Pertama -->
-                <div class="w-full self-center px-4 text-center">
-                    <h1 class="text-base font-semibold text-primary md:text-xl pb-4">
-                        <span class="block text-4xl font-bold text-dark dark:text-white lg:text-5xl"> Hello, I'm Ervina
-                            Novlianti </span>
-                    </h1>
-                    <h2 class="mb-20 text-lg font-medium text-slate-500 lg:text-2xl">Backend Developer | PHP | Node JS</h2>
-                    <a href="https://www.linkedin.com/in/ervina-novlianti/"
-                        class="rounded-full bg-primary px-8 py-3 text-base font-semibold text-white transition duration-300 ease-in-out hover:opacity-80 hover:shadow-lg">Contact
-                        Me</a>
-                </div>
-                <!-- Element Kedua -->
-                <div class="w-full self-end px-4 lg:w-1/2">
-                    <div class="relative mt-10 lg:right-0 lg:mt-9"></div>
-                </div>
-            </div>
+      </div>
+      <div class="exp-item reveal">
+        <div class="exp-year">2022</div>
+        <div>
+          <div class="exp-name">Kampus Mengajar — Batch 4</div>
+          <div class="exp-role">Teaching Programme · Merdeka Belajar</div>
+          <p class="exp-detail">Placed in schools requiring additional government attention as part of the national Merdeka Belajar Kampus Merdeka initiative.</p>
         </div>
-    </section>
-    <!-- Hero Section End -->
-
-    <!-- About Section Start -->
-    <section id="about" class="pb-16 pt-20 dark:bg-dark">
-        <div class="container">
-            <div class="flex flex-wrap">
-                <div class="mb-10 w-full px-4 pl-5 lg:w-1/2">
-                    <h4 class="mb-3 text-lg font-bold uppercase text-primary">About Me</h4>
-                    <h2 class="mb-5 max-w-md text-3xl font-bold text-dark dark:text-white lg:text-4xl">Web Developer
-                    </h2>
-                    <p class="max-w-xl text-base font-medium text-secondary lg:text-lg">
-                        Experienced in coding and skilled at developing website-based projects. I have experience
-                        developing systems from planning, designing, coding, testing, and maintenance by keeping the
-                        system running well.
-                    </p>
-                </div>
-                <div class="w-fill px-4 lg:w-1/2">
-                    <h3 class="mb-4 text-2xl font-semibold text-dark dark:text-white lg:pt-10 lg:text-3xl">Let's Connect
-                    </h3>
-                    <p class="mb-6 text-base font-medium text-secondary lg:text-lg">Find me on media social</p>
-                    <div class="flex items-center">
-                        <!-- Instagram -->
-                        <a href="https://www.instagram.com/ervnanvlnti/" target="_blank"
-                            class="mr-3 flex h-9 w-9 items-center justify-center rounded-full border border-slate-300 hover:border-primary hover:bg-primary hover:text-white dark:text-slate-300">
-                            <svg role="img" width="20" class="fill-current" viewBox="0 0 24 24"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <title>Instagram</title>
-                                <path
-                                    d="M12 0C8.74 0 8.333.015 7.053.072 5.775.132 4.905.333 4.14.63c-.789.306-1.459.717-2.126 1.384S.935 3.35.63 4.14C.333 4.905.131 5.775.072 7.053.012 8.333 0 8.74 0 12s.015 3.667.072 4.947c.06 1.277.261 2.148.558 2.913.306.788.717 1.459 1.384 2.126.667.666 1.336 1.079 2.126 1.384.766.296 1.636.499 2.913.558C8.333 23.988 8.74 24 12 24s3.667-.015 4.947-.072c1.277-.06 2.148-.262 2.913-.558.788-.306 1.459-.718 2.126-1.384.666-.667 1.079-1.335 1.384-2.126.296-.765.499-1.636.558-2.913.06-1.28.072-1.687.072-4.947s-.015-3.667-.072-4.947c-.06-1.277-.262-2.149-.558-2.913-.306-.789-.718-1.459-1.384-2.126C21.319 1.347 20.651.935 19.86.63c-.765-.297-1.636-.499-2.913-.558C15.667.012 15.26 0 12 0zm0 2.16c3.203 0 3.585.016 4.85.071 1.17.055 1.805.249 2.227.415.562.217.96.477 1.382.896.419.42.679.819.896 1.381.164.422.36 1.057.413 2.227.057 1.266.07 1.646.07 4.85s-.015 3.585-.074 4.85c-.061 1.17-.256 1.805-.421 2.227-.224.562-.479.96-.899 1.382-.419.419-.824.679-1.38.896-.42.164-1.065.36-2.235.413-1.274.057-1.649.07-4.859.07-3.211 0-3.586-.015-4.859-.074-1.171-.061-1.816-.256-2.236-.421-.569-.224-.96-.479-1.379-.899-.421-.419-.69-.824-.9-1.38-.165-.42-.359-1.065-.42-2.235-.045-1.26-.061-1.649-.061-4.844 0-3.196.016-3.586.061-4.861.061-1.17.255-1.814.42-2.234.21-.57.479-.96.9-1.381.419-.419.81-.689 1.379-.898.42-.166 1.051-.361 2.221-.421 1.275-.045 1.65-.06 4.859-.06l.045.03zm0 3.678c-3.405 0-6.162 2.76-6.162 6.162 0 3.405 2.76 6.162 6.162 6.162 3.405 0 6.162-2.76 6.162-6.162 0-3.405-2.76-6.162-6.162-6.162zM12 16c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4zm7.846-10.405c0 .795-.646 1.44-1.44 1.44-.795 0-1.44-.646-1.44-1.44 0-.794.646-1.439 1.44-1.439.793-.001 1.44.645 1.44 1.439z" />
-                            </svg>
-                        </a>
-                        <!-- Linkedin -->
-                        <a href="https://www.linkedin.com/in/ervina-novlianti/" target="_blank"
-                            class="mr-3 flex h-9 w-9 items-center justify-center rounded-full border border-slate-300 hover:border-primary hover:bg-primary hover:text-white dark:text-slate-300">
-                            <svg role="img" width="20" class="fill-current" viewBox="0 0 24 24"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <title>LinkedIn</title>
-                                <path
-                                    d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-                            </svg>
-                        </a>
-                        <!-- Github -->
-                        <a href="https://github.com/ervinanovlianti" target="_blank"
-                            class="mr-3 flex h-9 w-9 items-center justify-center rounded-full border border-slate-300 hover:border-primary hover:bg-primary hover:text-white dark:text-slate-300">
-                            <svg role="img" width="20" class="fill-current" viewBox="0 0 24 24"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <title>GitHub</title>
-                                <path
-                                    d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
-                            </svg>
-                        </a>
-                    </div>
-                </div>
-            </div>
+      </div>
+      <div class="exp-item reveal">
+        <div class="exp-year">2021</div>
+        <div>
+          <div class="exp-name">IDCamp × Dicoding Academy</div>
+          <div class="exp-role">Backend Development Learning Path</div>
+          <p class="exp-detail">Completed the backend developer learning path, culminating in a graded submission project building a RESTful API with Node.js.</p>
         </div>
-    </section>
-    <!-- About Section End -->
-
-    <section class="bg-slate-100 pb-12 pt-16 dark:bg-slate-800" id="portfolio">
-        <div class="container">
-            <div class="w-full px-4">
-                <div class="mx-auto mb-16 max-w-xl text-center">
-                    <h4 class="mb-2 text-lg font-semibold text-primary">Portfolio</h4>
-                    <h2 class="mb-4 text-3xl font-bold text-dark dark:text-white sm:text-4xl lg:text-5xl">Project</h2>
-                    <p class="text-md font-medium text-secondary md:text-lg">My Project Based Learning</p>
-                </div>
-            </div>
-            <div class="flex w-full flex-wrap justify-center px-4 xl:mx-auto xl:w-10/12">
-                <div class="mb-12 p-4 md:w-1/2">
-                    <div class="overflow-hidden rounded-md shadow-md"><img alt="resful-api"
-                            src="dist/img/project-img/sistem-rekapitulasi.jpg" width="w-full" /></div>
-                    <h3 class="mt-5 mb-3 text-xl font-semibold text-dark dark:text-white"><a
-                            href="https://github.com/ervinanovlianti/sistem-rekapitulasi-keluhan"
-                            target="_blank">Recapitulation and Monitoring System</a></h3>
-                    <p class="mb-3 text-primary dark:text-secondary">Tech Stack: Laravel</p>
-                    <p class="text-base dark:text-secondary">
-                        Recapitulation and Monitoring System for Container Service User Complaints at PT Pelindo
-                        Terminal Petikemas New Makassar. This system successfully applies the Naive Bayes method to
-                        classify complaints based on categories. With the complaint data crud feature, as well as using
-                        Laravel Excel to import data into Excel files.
-                    </p>
-                    <div class="mt-5"><a
-                            class="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:opacity-70"
-                            href="https://github.com/ervinanovlianti/sistem-rekapitulasi-keluhan"
-                            target="_blank">Preview</a>
-                    </div>
-                </div>
-
-                <div class="mb-12 p-4 md:w-1/2">
-                    <div class="overflow-hidden rounded-md shadow-md"><img alt="resful-api"
-                            src="dist/img/project-img/api-postman.jpg" width="w-full" /></div>
-                    <h3 class="mt-5 mb-3 text-xl font-semibold text-dark dark:text-white"><a
-                            href="https://github.com/ervinanovlianti/bookself-restful-api" target="_blank">BookShelf
-                            Restful API</a></h3>
-                    <p class="mb-3 text-primary dark:text-secondary">Tech Stack: NodeJS & HapiJS</p>
-                    <p class="text-base dark:text-secondary">
-                        Bookself Restful API is a Submission Project Backend-Learning Path by Dicoding Academy which is
-                        equipped with Create,
-                        Read, Update and Delete book features.
-                    </p>
-                    <div class="mt-5"><a
-                            class="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:opacity-70"
-                            href="https://github.com/ervinanovlianti/bookself-restful-api" target="_blank">Preview</a>
-                    </div>
-                </div>
-
-                <div class="mb-12 p-4 md:w-1/2">
-                    <div class="overflow-hidden rounded-md shadow-md"><img alt="bookstore"
-                            src="dist/img/project-img/bookstore.jpg" width="w-full" /></div>
-                    <h3 class="mt-5 mb-3 text-xl font-semibold text-dark dark:text-white"><a
-                            href="https://github.com/ervinanovlianti/project-react.js" target="_blank">Book Store
-                            Management</a>
-                    </h3>
-                    <p class="mb-3 text-primary dark:text-secondary">Tech Stack: ReactJS + ExpresJS</p>
-                    <p class="text-base dark:text-secondary">This application is a Base Learning Project by Bootcamp
-                        Camp404 with React JS frontend and Express JS backend, using a no SQL database, namely Mongo DB.
-                    </p>
-                    <div class="mt-5"><a
-                            class="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:opacity-70"
-                            href="https://github.com/ervinanovlianti/project-react.js" target="_blank">Preview</a></div>
-                </div>
-
-                <div class="mb-12 p-4 md:w-1/2">
-                    <div class="overflow-hidden rounded-md shadow-md"><img alt="web-blog"
-                            src="dist/img/project-img/web-blog.jpg" width="w-full" /></div>
-                    <h3 class="mt-5 mb-3 text-xl font-semibold text-dark dark:text-white"><a
-                            href="https://github.com/ervinanovlianti/task-5-fullstack" target="_blank">Blog</a></h3>
-                    <p class="mb-3 text-primary dark:text-secondary">Tech Stack: Laravel, Database: MySql</p>
-                    <p class="text-base dark:text-secondary">
-                        This Web Blog implements the Authentication feature using Laravel Auth with JWT Token and View
-                        Implementing Laravel UI
-                        using Bootstrap 5. This project is the final assignment of the Virtual Internship Experience as
-                        a Fullstack Developer
-                        Intern at Investree through the Rakamin Academy program
-                    </p>
-                    <div class="mt-5"><a
-                            class="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:opacity-70"
-                            href="https://github.com/ervinanovlianti/task-5-fullstack" target="_blank">Preview</a></div>
-                </div>
-
-                <div class="mb-12 p-4 md:w-1/2">
-                    <div class="overflow-hidden rounded-md shadow-md"><img alt="kalkulator"
-                            src="dist/img/project-img/kalkulator-web.jpg" width="w-full" /></div>
-                    <h3 class="mt-5 mb-3 text-xl font-semibold text-dark dark:text-white"><a
-                            href="https://ervinanovlianti.github.io/kalkulator-web/" target="_blank">Kalkulator</a></h3>
-                    <p class="text-primary dark:text-secondary">Tech Stack: JavaScript</p>
-                    <p class="text-base dark:text-secondary">Aplikasi Kalkulator Sederhana menggunakan JavaScript dengan
-                        menerapkan penggunaan DOM.</p>
-                    <div class="mt-5"><a
-                            class="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:opacity-70"
-                            href="https://ervinanovlianti.github.io/kalkulator-web/" target="_blank">Preview</a></div>
-                </div>
-
-                <div class="mb-12 p-4 md:w-1/2">
-                    <div class="overflow-hidden rounded-md shadow-md"><img alt="Ecommerce Project"
-                            src="dist/img/project-img/ecommerce-project.jpg" width="w-full" /></div>
-                    <h3 class="mt-5 mb-3 text-xl font-semibold text-dark dark:text-white"><a
-                            href="https://ervinanovlianti.com/sepatu-kita/" target="_blank">Online Store /
-                            E-commerce</a>
-                    </h3>
-                    <p class="mb-3 text-primary dark:text-secondary">Tech Stack: PHP using CodeIgniter 3</p>
-                    <p class="text-base dark:text-secondary">
-                        Online Shoe Store Sales Information System (E-commerce) application with item management, cart,
-                        payment and report
-                        features based on a certain time. This system is equipped with three user access rights, namely:
-                        Administration, Cashier and
-                        Customer according to their respective functions.
-                    </p>
-                    <div class="mt-5"><a
-                            class="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:opacity-70"
-                            href="https://github.com/ervinanovlianti/e-commerce-sepatu" target="_blank">Preview</a>
-                    </div>
-                </div>
-
-                <div class="mb-12 p-4 md:w-1/2">
-                    <div class="overflow-hidden rounded-md shadow-md"><img alt="logbook-harian"
-                            src="dist/img/project-img/logbook.jpg" width="w-full" /></div>
-                    <h3 class="mt-5 mb-3 text-xl font-semibold text-dark dark:text-white"><a
-                            href="https://km4.ervinanovlianti.com/" target="_blank">Auto PDF Daily Logbook Kampus
-                            Mengajar Batch 4</a></h3>
-                    <p class="mb-3 text-primary dark:text-secondary">Tech Stack: PHP using CodeIgniter 3</p>
-                    <p class="text-base dark:text-secondary">
-                        This system was built to create daily Teaching Campus reports automatically so that it can
-                        overcome the problem of
-                        making reports that have to be done repeatedly in the same format. With this system, the final
-                        result is a PDF report
-                        that is ready to be submitted.
-                    </p>
-                    <div class="mt-5"><a
-                            class="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:opacity-70"
-                            href="https://github.com/ervinanovlianti/autopdf-logbook-km4" target="_blank">Preview</a>
-                    </div>
-                </div>
-
-                <div class="mb-12 p-4 md:w-1/2">
-                    <div class="overflow-hidden rounded-md shadow-md"><img alt="logbook-harian"
-                            src="dist/img/project-img/penggajian.jpg" width="w-full" /></div>
-                    <h3 class="mt-5 mb-3 text-xl font-semibold text-dark dark:text-white"><a
-                            href="https://penggajian.ervinanovlianti.com/" target="_blank">Sistem Informasi
-                            Penggajian</a></h3>
-                    <p class="mb-3 text-primary dark:text-secondary">Tech Stack: PHP with Framework CodeIgniter</p>
-                    <p class="text-base dark:text-secondary">Sistem Informasi Penggajian berbasis website dengan fitur
-                        CRUD dan Report (Laporan)</p>
-                    <div class="mt-5">
-                        <a class="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:opacity-70"
-                            href="https://github.com/ervinanovlianti/sistem-informasi-penggajian-ci3"
-                            target="_blank">Preview</a>
-                    </div>
-                </div>
-
-                <div class="mb-12 p-4 md:w-1/2">
-                    <div class="overflow-hidden rounded-md shadow-md"><img alt="todo-app"
-                            src="dist/img/project-img/todos-app.jpg" width="w-full" /></div>
-
-                    <h3 class="mt-5 mb-3 text-xl font-semibold text-dark dark:text-white"><a
-                            href="https://ervinanovlianti.github.io/todo-app/" target="_blank">To Do List</a></h3>
-
-                    <p class="mb-3 text-primary dark:text-secondary">Tech Stack: JavaScript</p>
-                    <div class="mt-5"><a
-                            class="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:opacity-70"
-                            href="https://ervinanovlianti.github.io/todo-app/" target="_blank">Preview</a></div>
-                </div>
-
-                <div class="mb-12 p-4 md:w-1/2">
-                    <div class="overflow-hidden rounded-md shadow-md"><img alt="Perpustakaan Online"
-                            src="dist/img/project-img/library-project.jpg" width="w-full" /></div>
-                    <h3 class="mt-5 mb-3 text-xl font-semibold text-dark dark:text-white"><a
-                            href="https://ervinanovlianti.com/library/" target="_blank">Library Member Registration
-                            System</a></h3>
-                    <p class="mb-3 text-primary dark:text-secondary">Tech Stack: PHP using CodeIgniter 3</p>
-                    <p class="text-base dark:text-secondary"></p>
-                    <div class="mt-5"><a
-                            class="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:opacity-70"
-                            href="https://github.com/ervinanovlianti/crud-perpustakaan-online"
-                            target="_blank">Preview</a></div>
-                </div>
-
-                <div class="mb-12 p-4 md:w-1/2">
-                    <div class="overflow-hidden rounded-md shadow-md"><img alt="Project Pertama"
-                            src="dist/img/project-img/sistem-login-project.jpg" width="w-full" /></div>
-                    <h3 class="mt-5 mb-3 text-xl font-semibold text-dark dark:text-white"><a
-                            href="https://ervinanovlianti.com/sistem-login/" target="_blank">User Management System</a>
-                    </h3>
-                    <p class="mb-3 text-primary dark:text-secondary">Tech Stack: PHP using CodeIgniter 3</p>
-                    <p class="text-base dark:text-secondary"></p>
-                    <div class="mt-5"><a
-                            class="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:opacity-70"
-                            href="https://github.com/ervinanovlianti/sistem-login-codeigniter"
-                            target="_blank">Preview</a></div>
-                </div>
-
-            </div>
+      </div>
+      <div class="exp-item reveal">
+        <div class="exp-year">2022</div>
+        <div>
+          <div class="exp-name">Virtual Internship — Investree</div>
+          <div class="exp-role">Fullstack Developer · Rakamin Academy</div>
+          <p class="exp-detail">Completed a virtual internship programme focused on fullstack development, delivering a production-ready web blog application.</p>
         </div>
-    </section>
-    <!-- Portfolio Section End --><!-- Blog Section Start -->
+      </div>
+    </div>
+  </div>
+</section>
 
-    <section class="bg-white pb-12 pt-16 dark:bg-dark" id="blog">
-        <div class="container">
-            <div class="w-full px-4">
-                <div class="mx-auto mb-16 max-w-xl text-center">
-                    <h4 class="mb-2 text-lg font-semibold text-primary">Pengalaman</h4>
+<!-- CONTACT -->
+<section id="contact">
+  <div class="section-label">Contact</div>
+  <h2 class="section-title">Let's Build<br>Something Together</h2>
+  <div class="contact-inner reveal">
+    <div class="gold-line"></div>
+    <a href="mailto:ervinanovliantii@gmail.com" class="contact-email">ervinanovliantii@gmail.com</a>
+    <p class="contact-loc">Makassar, Indonesia</p>
+    <div class="social-links" style="margin-top:40px">
+      <a href="https://www.linkedin.com/in/ervina-novlianti/" target="_blank" class="social-link">LinkedIn</a>
+      <a href="https://github.com/ervinanovlianti" target="_blank" class="social-link">GitHub</a>
+      <a href="https://www.instagram.com/ervnanvlnti/" target="_blank" class="social-link">Instagram</a>
+    </div>
+  </div>
+</section>
 
-                    <h2 class="mb-4 text-3xl font-bold text-dark dark:text-white sm:text-4xl lg:text-5xl">Kegiatan dan
-                        Organisasi</h2>
-                    <!--<p class="font-medium text-md text-secondary md:text-lg"></p>-->
-                </div>
-            </div>
+<!-- FOOTER -->
+<footer>
+  <span class="footer-name">Ervina Novlianti</span>
+  <span class="footer-copy">© 2024 — Crafted with care</span>
+</footer>
 
-            <div class="flex flex-wrap">
-                <div class="w-full px-4 lg:w-1/2 xl:w-1/3">
-                    <div class="mb-10 overflow-hidden rounded-xl bg-white shadow-lg dark:bg-slate-800">
-                        <img alt="Sandbox" src="dist/img/activity/sandboxactivity.JPG" width="w-full" />
-                        <div class="px-6 py-8">
-                            <h3><a class="mb-3 block truncate text-lg font-semibold dark:text-white dark:shadow-slate-500"
-                                    href=""> IGNITION SANDBOX by Sherpa 2022</a></h3>
+<script>
+  // Cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+  function animCursor() {
+    cursor.style.transform = `translate(${mx}px, ${my}px) translate(-50%,-50%)`;
+    rx += (mx - rx) * 0.12;
+    ry += (my - ry) * 0.12;
+    ring.style.transform = `translate(${rx}px, ${ry}px) translate(-50%,-50%)`;
+    requestAnimationFrame(animCursor);
+  }
+  animCursor();
 
-                            <p class="mb-6 text-base font-medium text-secondary">
-                                Sandbox by Sherpa 2022 sebagai wadah dan jalan untuk membangun startup digital. Melalui
-                                Sandbox, sherpa menyediakan ruang untuk mengembangkan ide didampingi oleh mentor-mentor
-                                berpengalaman di bidangnya masing-masing.
-                            </p>
-                            <!-- <a href="" class="px-4 py-2 text-sm font-medium text-white rounded-lg bg-primary hover:opacity-70">Baca Selengkapnya</a> -->
-                        </div>
-                    </div>
-                </div>
+  document.querySelectorAll('a').forEach(a => {
+    a.addEventListener('mouseenter', () => { cursor.style.transform += ' scale(2)'; ring.style.opacity = '1'; });
+    a.addEventListener('mouseleave', () => { cursor.style.transform = cursor.style.transform.replace(' scale(2)', ''); ring.style.opacity = '0.5'; });
+  });
 
-                <div class="w-full px-4 lg:w-1/2 xl:w-1/3">
-                    <div class="mb-10 overflow-hidden rounded-xl bg-white shadow-lg dark:bg-slate-800">
-                        <img alt="KampusMengajar" src="dist/img/activity/kam4.png" width="w-full" />
-                        <div class="px-6 py-8">
-                            <h3><a class="mb-3 block truncate text-lg font-semibold dark:text-white" href=""> KAMPUS
-                                    MENGAJAR ANGKATAN 4</a></h3>
-                            <p class="mb-6 text-base font-medium text-secondary">Suatu program Merdeka Belajar Kampus
-                                Merdeka dengan penempatan di sekolah-sekolah yang membutuhkan perhatian lebih dari
-                                pemerintah.</p>
-                            <!-- <a href="" class="px-4 py-2 text-sm font-medium text-white rounded-lg bg-primary hover:opacity-70">Baca Selengkapnya</a> -->
-                        </div>
-                    </div>
-                </div>
+  // Nav scroll
+  const nav = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 40);
+  });
 
-                <div class="w-full px-4 lg:w-1/2 xl:w-1/3">
-                    <div class="mb-10 overflow-hidden rounded-xl bg-white shadow-lg dark:bg-slate-800">
-                        <img alt="Programming" src="dist/img/portfolio/1.jpg" width="w-full" />
-                        <div class="px-6 py-8">
-                            <h3><a class="mb-3 block truncate text-lg font-semibold dark:text-white" href="">IDCAMP x
-                                    DICODING ACADEMY</a></h3>
-
-                            <!-- <p class="mb-6 text-base font-medium text-secondary">Lorem ipsum dolor sit amet consectetur
-                                adipisicing elit. Voluptatem id enim quidem.</p> -->
-                            <!-- <a href="" class="px-4 py-2 text-sm font-medium text-white rounded-lg bg-primary hover:opacity-70">Baca Selengkapnya</a> -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <footer class="bg-dark pt-10 pb-4">
-        <div class="container">
-            <div class="flex flex-wrap">
-                <div class="mb-12 w-full px-4 font-medium text-slate-300 md:w-1/3">
-                    <h2 class="mb-5 text-4xl font-bold text-white">Ervina Novlianti</h2>
-
-                    <h3 class="mb-2 text-2xl font-bold">Hubungi Saya</h3>
-                    <p>ervinanovliantii@gmail.com</p>
-                    <p>Makassar, Indonesia</p>
-                </div>
-
-                <div class="mb-12 w-full px-4 md:w-1/3">
-                    <h3 class="mb-5 text-lg font-semibold text-white">Kategori Tulisan</h3>
-
-                    <ul class="text-slate-300">
-                        <!-- <li><a class="inline-block text-base hover:text-primary" href="">Programming</a></li> -->
-                        <!--<li>--><!--    <a href="" class="inline-block text-base hover:text-primary">Data Mining</a>--><!--</li>--><!--<li>--><!--    <a href="" class="inline-block text-base hover:text-primary">Life Style</a>--><!--</li>-->
-                    </ul>
-                </div>
-
-                <div class="mb-12 w-full px-4 md:w-1/3">
-                    <h3 class="mb-5 text-lg font-semibold text-white">Tautan</h3>
-
-                    <ul class="text-slate-300">
-                        <li><a class="inline-block text-base hover:text-primary" href="#home">Home</a></li>
-                        <li><a class="inline-block text-base hover:text-primary" href="#about">About Me</a></li>
-                        <li><a class="inline-block text-base hover:text-primary" href="#portfolio">Portfolio</a></li>
-                        <li><a class="inline-block text-base hover:text-primary" href="#blog">Blog</a></li>
-                        <li><a class="inline-block text-base hover:text-primary" href="#contact">Contact</a></li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="w-full border-t border-slate-700 pt-10">
-                <div class="mb-5 flex items-center justify-center">
-                    <!-- Instagram --><a
-                        class="mr-3 flex h-9 w-9 items-center justify-center rounded-full border border-slate-300 text-slate-300 hover:border-primary hover:bg-primary hover:text-white"
-                        href="https://www.instagram.com/ervnanvlnti/" target="_blank"><svg class="fill-current"
-                            role="img" viewbox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg">
-                            <title></title>
-                            <path
-                                d="M12 0C8.74 0 8.333.015 7.053.072 5.775.132 4.905.333 4.14.63c-.789.306-1.459.717-2.126 1.384S.935 3.35.63 4.14C.333 4.905.131 5.775.072 7.053.012 8.333 0 8.74 0 12s.015 3.667.072 4.947c.06 1.277.261 2.148.558 2.913.306.788.717 1.459 1.384 2.126.667.666 1.336 1.079 2.126 1.384.766.296 1.636.499 2.913.558C8.333 23.988 8.74 24 12 24s3.667-.015 4.947-.072c1.277-.06 2.148-.262 2.913-.558.788-.306 1.459-.718 2.126-1.384.666-.667 1.079-1.335 1.384-2.126.296-.765.499-1.636.558-2.913.06-1.28.072-1.687.072-4.947s-.015-3.667-.072-4.947c-.06-1.277-.262-2.149-.558-2.913-.306-.789-.718-1.459-1.384-2.126C21.319 1.347 20.651.935 19.86.63c-.765-.297-1.636-.499-2.913-.558C15.667.012 15.26 0 12 0zm0 2.16c3.203 0 3.585.016 4.85.071 1.17.055 1.805.249 2.227.415.562.217.96.477 1.382.896.419.42.679.819.896 1.381.164.422.36 1.057.413 2.227.057 1.266.07 1.646.07 4.85s-.015 3.585-.074 4.85c-.061 1.17-.256 1.805-.421 2.227-.224.562-.479.96-.899 1.382-.419.419-.824.679-1.38.896-.42.164-1.065.36-2.235.413-1.274.057-1.649.07-4.859.07-3.211 0-3.586-.015-4.859-.074-1.171-.061-1.816-.256-2.236-.421-.569-.224-.96-.479-1.379-.899-.421-.419-.69-.824-.9-1.38-.165-.42-.359-1.065-.42-2.235-.045-1.26-.061-1.649-.061-4.844 0-3.196.016-3.586.061-4.861.061-1.17.255-1.814.42-2.234.21-.57.479-.96.9-1.381.419-.419.81-.689 1.379-.898.42-.166 1.051-.361 2.221-.421 1.275-.045 1.65-.06 4.859-.06l.045.03zm0 3.678c-3.405 0-6.162 2.76-6.162 6.162 0 3.405 2.76 6.162 6.162 6.162 3.405 0 6.162-2.76 6.162-6.162 0-3.405-2.76-6.162-6.162-6.162zM12 16c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4zm7.846-10.405c0 .795-.646 1.44-1.44 1.44-.795 0-1.44-.646-1.44-1.44 0-.794.646-1.439 1.44-1.439.793-.001 1.44.645 1.44 1.439z">
-                            </path>
-                        </svg>
-                    </a>
-                    <!-- Linkedin -->
-                    <a class="mr-3 flex h-9 w-9 items-center justify-center rounded-full border border-slate-300 text-slate-300 hover:border-primary hover:bg-primary hover:text-white"
-                        href="https://www.linkedin.com/in/ervina-novlianti" target="_blank">
-                        <svg class="fill-current" role="img" viewbox="0 0 24 24" width="20"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <title></title>
-                            <path
-                                d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z">
-                            </path>
-                        </svg>
-                    </a>
-                    <!-- Github -->
-                    <a class="mr-3 flex h-9 w-9 items-center justify-center rounded-full border border-slate-300 text-slate-300 hover:border-primary hover:bg-primary hover:text-white"
-                        href="https://github.com/ervinanovlianti" target="_blank">
-                        <svg class="fill-current" role="img" viewbox="0 0 24 24" width="20"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <title></title>
-                            <path
-                                d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12">
-                            </path>
-                        </svg>
-                    </a>
-                </div>
-
-                <p class="text-center text-xs font-medium text-slate-500">
-                    Dibuat dengan <span class="text-white">🤍</span> oleh <a class="font-bold text-primary" href=""
-                        target="_blank"> Ervina Novlianti </a>, menggunakan
-                    <a class="font-bold text-sky-500" href="https://tailwindcss.com/" target="_blank"> Tailwind CSS</a>
-                </p>
-
-                <p class="text-center text-xs font-bold text-slate-300">Makassar , Indonesia</p>
-            </div>
-        </div>
-    </footer>
-    <!-- Footer end --><!-- Back to top Start --><!-- Back to top End -->
-
-    <script src="dist/js/script.js"></script>
+  // Reveal on scroll
+  const reveals = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 80);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+  reveals.forEach(r => io.observe(r));
+</script>
 </body>
-<grammarly-desktop-integration data-grammarly-shadow-root="true"></grammarly-desktop-integration>
-
 </html>
